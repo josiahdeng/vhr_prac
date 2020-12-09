@@ -13,11 +13,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -76,35 +79,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .loginProcessingUrl("/doLogin")
                 .loginPage("/login")
-                .successHandler((request, response, authentication) -> {
-                    response.setContentType("application/json;charset=utf-8");
-                    PrintWriter printWriter = response.getWriter();
-                    Hr hr = (Hr) authentication.getPrincipal();
-                    hr.setPassword(null);
-                    RespBean ok = RespBean.ok("登录成功", hr);
-                    printWriter.write(new ObjectMapper().writeValueAsString(ok));
-                    printWriter.flush();
-                    printWriter.close();
-                })
-                .failureHandler((request, response, exception) -> {
-                    response.setContentType("application/json;charset=utf-8");
-                    PrintWriter out = response.getWriter();
-                    RespBean error = RespBean.error("登录失败");
-                    if (exception instanceof LockedException){
-                        error.setMsg("账号被锁定，请联系管理员");
-                    } else if (exception instanceof CredentialsExpiredException){
-                        error.setMsg("密码过期，请联系管理员");
-                    } else if (exception instanceof AccountExpiredException){
-                        error.setMsg("账户过期，请联系管理员");
-                    } else if (exception instanceof DisabledException){
-                        error.setMsg("账户被禁用，请联系管理员");
-                    } else if (exception instanceof BadCredentialsException){
-                        error.setMsg("用户名或密码错误,请重试");
-                    }
-                    out.write(new ObjectMapper().writeValueAsString(error));
-                    out.flush();
-                    out.close();
-                })
                 .permitAll()
                 .and()
                 .logout()
@@ -135,6 +109,43 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 out.flush();
                 out.close();
             }
+        }).and().addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
+
+    @Bean
+    LoginFilter loginFilter() throws Exception {
+        LoginFilter loginFilter = new LoginFilter();
+        loginFilter.setAuthenticationManager(authenticationManager());
+        loginFilter.setFilterProcessesUrl("/doLogin");
+        loginFilter.setAuthenticationSuccessHandler((request, response, authentication) -> {
+            response.setContentType("application/json;charset=utf-8");
+            PrintWriter printWriter = response.getWriter();
+            Hr hr = (Hr) authentication.getPrincipal();
+            hr.setPassword(null);
+            RespBean ok = RespBean.ok("登录成功", hr);
+            printWriter.write(new ObjectMapper().writeValueAsString(ok));
+            printWriter.flush();
+            printWriter.close();
         });
+        loginFilter.setAuthenticationFailureHandler((request, response, exception) -> {
+            response.setContentType("application/json;charset=utf-8");
+            PrintWriter out = response.getWriter();
+            RespBean error = RespBean.error("登录失败");
+            if (exception instanceof LockedException){
+                error.setMsg("账号被锁定，请联系管理员");
+            } else if (exception instanceof CredentialsExpiredException){
+                error.setMsg("密码过期，请联系管理员");
+            } else if (exception instanceof AccountExpiredException){
+                error.setMsg("账户过期，请联系管理员");
+            } else if (exception instanceof DisabledException){
+                error.setMsg("账户被禁用，请联系管理员");
+            } else if (exception instanceof BadCredentialsException){
+                error.setMsg("用户名或密码错误,请重试");
+            }
+            out.write(new ObjectMapper().writeValueAsString(error));
+            out.flush();
+            out.close();
+        });
+        return loginFilter;
     }
 }
