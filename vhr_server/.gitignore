@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 /.mvn/
+/src/test/java/com/lucian/vhr_server/VhrServerApplicationTests.java
+/mvnw
+/mvnw.cmd
