@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.OplogDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.Oplog" id="OplogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="addDate" column="add_date" jdbcType="TIMESTAMP"/>
+        <result property="operate" column="operate" jdbcType="VARCHAR"/>
+        <result property="hrId" column="hr_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="OplogMap">
+        select id,
+               add_date,
+               operate,
+               hr_id
+        from vhr.oplog
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="OplogMap">
+        select id,
+               add_date,
+               operate,
+               hr_id
+        from vhr.oplog
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="OplogMap">
+        select
+        id, add_date, operate, hr_id
+        from vhr.oplog
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="addDate != null">
+                and add_date = #{addDate}
+            </if>
+            <if test="operate != null and operate != ''">
+                and operate = #{operate}
+            </if>
+            <if test="hrId != null">
+                and hr_id = #{hrId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.oplog(operate)
+        values (#{operate})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.oplog(operate)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.operate})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.oplog(operate)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.operate})
+        </foreach>
+        on duplicate key update
+        operate = values(operate)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.oplog
+        <set>
+            <if test="operate != null and operate != ''">
+                operate = #{operate},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.oplog
+        where id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.EmployeeDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.Employee" id="EmployeeMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="VARCHAR"/>
+        <result property="birthday" column="birthday" jdbcType="TIMESTAMP"/>
+        <result property="idCard" column="id_card" jdbcType="VARCHAR"/>
+        <result property="wedLock" column="wed_lock" jdbcType="VARCHAR"/>
+        <result property="nationId" column="nation_id" jdbcType="INTEGER"/>
+        <result property="nativePlace" column="native_place" jdbcType="VARCHAR"/>
+        <result property="politicId" column="politic_id" jdbcType="INTEGER"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="departmentId" column="department_id" jdbcType="INTEGER"/>
+        <result property="jobLevelId" column="job_level_id" jdbcType="INTEGER"/>
+        <result property="posId" column="pos_id" jdbcType="INTEGER"/>
+        <result property="engageForm" column="engage_form" jdbcType="VARCHAR"/>
+        <result property="tiptopDegree" column="tiptop_degree" jdbcType="VARCHAR"/>
+        <result property="specialty" column="specialty" jdbcType="VARCHAR"/>
+        <result property="school" column="school" jdbcType="VARCHAR"/>
+        <result property="beginDate" column="begin_date" jdbcType="TIMESTAMP"/>
+        <result property="workState" column="work_state" jdbcType="VARCHAR"/>
+        <result property="workId" column="work_id" jdbcType="VARCHAR"/>
+        <result property="contractTerm" column="contract_term" jdbcType="NUMERIC"/>
+        <result property="conversionTime" column="conversion_time" jdbcType="TIMESTAMP"/>
+        <result property="notworkDate" column="notwork_date" jdbcType="TIMESTAMP"/>
+        <result property="beginContract" column="begin_contract" jdbcType="TIMESTAMP"/>
+        <result property="endContract" column="end_contract" jdbcType="TIMESTAMP"/>
+        <result property="workAge" column="work_age" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="EmployeeMap">
+        select id,
+               name,
+               gender,
+               birthday,
+               id_card,
+               wed_lock,
+               nation_id,
+               native_place,
+               politic_id,
+               email,
+               phone,
+               address,
+               department_id,
+               job_level_id,
+               pos_id,
+               engage_form,
+               tiptop_degree,
+               specialty,
+               school,
+               begin_date,
+               work_state,
+               work_id,
+               contract_term,
+               conversion_time,
+               notwork_date,
+               begin_contract,
+               end_contract,
+               work_age
+        from vhr.employee
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EmployeeMap">
+        select id,
+               name,
+               gender,
+               birthday,
+               id_card,
+               wed_lock,
+               nation_id,
+               native_place,
+               politic_id,
+               email,
+               phone,
+               address,
+               department_id,
+               job_level_id,
+               pos_id,
+               engage_form,
+               tiptop_degree,
+               specialty,
+               school,
+               begin_date,
+               work_state,
+               work_id,
+               contract_term,
+               conversion_time,
+               notwork_date,
+               begin_contract,
+               end_contract,
+               work_age
+        from vhr.employee
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="EmployeeMap">
+        select
+        id, name, gender, birthday, id_card, wed_lock, nation_id, native_place, politic_id, email, phone, address,
+        department_id, job_level_id, pos_id, engage_form, tiptop_degree, specialty, school, begin_date, work_state,
+        work_id, contract_term, conversion_time, notwork_date, begin_contract, end_contract, work_age
+        from vhr.employee
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="gender != null and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="birthday != null">
+                and birthday = #{birthday}
+            </if>
+            <if test="idCard != null and idCard != ''">
+                and id_card = #{idCard}
+            </if>
+            <if test="wedLock != null">
+                and wed_lock = #{wedLock}
+            </if>
+            <if test="nationId != null">
+                and nation_id = #{nationId}
+            </if>
+            <if test="nativePlace != null and nativePlace != ''">
+                and native_place = #{nativePlace}
+            </if>
+            <if test="politicId != null">
+                and politic_id = #{politicId}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone = #{phone}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
+            </if>
+            <if test="jobLevelId != null">
+                and job_level_id = #{jobLevelId}
+            </if>
+            <if test="posId != null">
+                and pos_id = #{posId}
+            </if>
+            <if test="engageForm != null and engageForm != ''">
+                and engage_form = #{engageForm}
+            </if>
+            <if test="tiptopDegree != null">
+                and tiptop_degree = #{tiptopDegree}
+            </if>
+            <if test="specialty != null and specialty != ''">
+                and specialty = #{specialty}
+            </if>
+            <if test="school != null and school != ''">
+                and school = #{school}
+            </if>
+            <if test="beginDate != null">
+                and begin_date = #{beginDate}
+            </if>
+            <if test="workState != null">
+                and work_state = #{workState}
+            </if>
+            <if test="workId != null and workId != ''">
+                and work_id = #{workId}
+            </if>
+            <if test="contractTerm != null">
+                and contract_term = #{contractTerm}
+            </if>
+            <if test="conversionTime != null">
+                and conversion_time = #{conversionTime}
+            </if>
+            <if test="notworkDate != null">
+                and notwork_date = #{notworkDate}
+            </if>
+            <if test="beginContract != null">
+                and begin_contract = #{beginContract}
+            </if>
+            <if test="endContract != null">
+                and end_contract = #{endContract}
+            </if>
+            <if test="workAge != null">
+                and work_age = #{workAge}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee(name, gender, birthday, email, phone, address, specialty, school)
+        values (#{name}, #{gender}, #{birthday}, #{email}, #{phone}, #{address}, #{specialty}, #{school})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee(name, gender, birthday, email, phone, address, specialty, school)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.gender}, #{entity.birthday}, #{entity.email}, #{entity.phone}, #{entity.address},
+            #{entity.specialty}, #{entity.school})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee(name, gender, birthday, email, phone, address, specialty, school)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.gender}, #{entity.birthday}, #{entity.email}, #{entity.phone}, #{entity.address},
+            #{entity.specialty}, #{entity.school})
+        </foreach>
+        on duplicate key update
+        name = values(name) , gender = values(gender) , birthday = values(birthday) , email = values(email) , phone =
+        values(phone) , address = values(address) , specialty = values(specialty) , school = values(school)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.employee
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="gender != null and gender != ''">
+                gender = #{gender},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="specialty != null and specialty != ''">
+                specialty = #{specialty},
+            </if>
+            <if test="school != null and school != ''">
+                school = #{school},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.employee
+        where id = #{id}
+    </delete>
+
+</mapper>

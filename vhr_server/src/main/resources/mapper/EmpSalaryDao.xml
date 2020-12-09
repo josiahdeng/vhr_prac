@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.EmpSalaryDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.EmpSalary" id="EmpSalaryMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="eId" column="e_id" jdbcType="INTEGER"/>
+        <result property="sId" column="s_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="EmpSalaryMap">
+        select id,
+               e_id,
+               s_id
+        from vhr.emp_salary
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EmpSalaryMap">
+        select id,
+               e_id,
+               s_id
+        from vhr.emp_salary
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="EmpSalaryMap">
+        select
+        id, e_id, s_id
+        from vhr.emp_salary
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="eId != null">
+                and e_id = #{eId}
+            </if>
+            <if test="sId != null">
+                and s_id = #{sId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.emp_salary(e_id, s_id)
+        values (#{eId}, #{sId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.emp_salary(e_id, s_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.sId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.emp_salary(e_id, s_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.sId})
+        </foreach>
+        on duplicate key update
+        e_id = values(e_id) , s_id = values(s_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.emp_salary
+        <set>
+            <if test="eId != null">
+                e_id = #{eId},
+            </if>
+            <if test="sId != null">
+                s_id = #{sId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.emp_salary
+        where id = #{id}
+    </delete>
+
+</mapper>

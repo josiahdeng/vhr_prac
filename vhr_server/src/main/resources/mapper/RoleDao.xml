@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.RoleDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.Role" id="RoleMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="nameZh" column="name_zh" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getAllRole" resultMap="RoleMap">
+        select * from vhr.role
+    </select>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RoleMap">
+        select id,
+               name,
+               name_zh
+        from vhr.role
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RoleMap">
+        select id,
+               name,
+               name_zh
+        from vhr.role
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="RoleMap">
+        select
+        id, name, name_zh
+        from vhr.role
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="nameZh != null and nameZh != ''">
+                and name_zh = #{nameZh}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.role(name, name_zh)
+        values (#{name}, #{nameZh})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.role(name, name_zh)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.nameZh})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.role(name, name_zh)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.nameZh})
+        </foreach>
+        on duplicate key update
+        name = values(name), name_zh=values(name_zh)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.role
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="nameZh != null and nameZh != ''">
+                name_zh = #{nameZh}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.role
+        where id = #{id}
+    </delete>
+
+</mapper>

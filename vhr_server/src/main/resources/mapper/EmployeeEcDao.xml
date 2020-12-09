@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.EmployeeEcDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.EmployeeEc" id="EmployeeEcMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="eId" column="e_id" jdbcType="INTEGER"/>
+        <result property="ecDate" column="ec_date" jdbcType="TIMESTAMP"/>
+        <result property="ecReason" column="ec_reason" jdbcType="VARCHAR"/>
+        <result property="ecPoint" column="ec_point" jdbcType="INTEGER"/>
+        <result property="ecType" column="ec_type" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="EmployeeEcMap">
+        select id,
+               e_id,
+               ec_date,
+               ec_reason,
+               ec_point,
+               ec_type,
+               remark
+        from vhr.employee_ec
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EmployeeEcMap">
+        select id,
+               e_id,
+               ec_date,
+               ec_reason,
+               ec_point,
+               ec_type,
+               remark
+        from vhr.employee_ec
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="EmployeeEcMap">
+        select
+        id, e_id, ec_date, ec_reason, ec_point, ec_type, remark
+        from vhr.employee_ec
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="eId != null">
+                and e_id = #{eId}
+            </if>
+            <if test="ecDate != null">
+                and ec_date = #{ecDate}
+            </if>
+            <if test="ecReason != null and ecReason != ''">
+                and ec_reason = #{ecReason}
+            </if>
+            <if test="ecPoint != null">
+                and ec_point = #{ecPoint}
+            </if>
+            <if test="ecType != null">
+                and ec_type = #{ecType}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee_ec(e_id, ec_date, ec_reason, ec_point, ec_type, remark)
+        values (#{eId}, #{ecDate}, #{ecReason}, #{ecPoint}, #{ecType}, #{remark})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee_ec(e_id, ec_date, ec_reason, ec_point, ec_type, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.ecDate}, #{entity.ecReason}, #{entity.ecPoint}, #{entity.ecType}, #{entity.remark})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.employee_ec(e_id, ec_date, ec_reason, ec_point, ec_type, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.ecDate}, #{entity.ecReason}, #{entity.ecPoint}, #{entity.ecType}, #{entity.remark})
+        </foreach>
+        on duplicate key update
+        e_id = values(e_id) , ec_date = values(ec_date) , ec_reason = values(ec_reason) , ec_point = values(ec_point) ,
+        ec_type = values(ec_type) , remark = values(remark)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.employee_ec
+        <set>
+            <if test="eId != null">
+                e_id = #{eId},
+            </if>
+            <if test="ecDate != null">
+                ec_date = #{ecDate},
+            </if>
+            <if test="ecReason != null and ecReason != ''">
+                ec_reason = #{ecReason},
+            </if>
+            <if test="ecPoint != null">
+                ec_point = #{ecPoint},
+            </if>
+            <if test="ecType != null">
+                ec_type = #{ecType},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.employee_ec
+        where id = #{id}
+    </delete>
+
+</mapper>

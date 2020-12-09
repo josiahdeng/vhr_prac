@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.AdjustSalaryDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.AdjustSalary" id="AdjustSalaryMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="eId" column="e_id" jdbcType="INTEGER"/>
+        <result property="asDate" column="as_date" jdbcType="TIMESTAMP"/>
+        <result property="beforeSalary" column="before_salary" jdbcType="INTEGER"/>
+        <result property="afterSalary" column="after_salary" jdbcType="INTEGER"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="AdjustSalaryMap">
+        select id,
+               e_id,
+               as_date,
+               before_salary,
+               after_salary,
+               reason,
+               remark
+        from vhr.adjust_salary
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AdjustSalaryMap">
+        select id,
+               e_id,
+               as_date,
+               before_salary,
+               after_salary,
+               reason,
+               remark
+        from vhr.adjust_salary
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="AdjustSalaryMap">
+        select
+        id, e_id, as_date, before_salary, after_salary, reason, remark
+        from vhr.adjust_salary
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="eId != null">
+                and e_id = #{eId}
+            </if>
+            <if test="asDate != null">
+                and as_date = #{asDate}
+            </if>
+            <if test="beforeSalary != null">
+                and before_salary = #{beforeSalary}
+            </if>
+            <if test="afterSalary != null">
+                and after_salary = #{afterSalary}
+            </if>
+            <if test="reason != null and reason != ''">
+                and reason = #{reason}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.adjust_salary(e_id, as_date, before_salary, after_salary, reason, remark)
+        values (#{eId}, #{asDate}, #{beforeSalary}, #{afterSalary}, #{reason}, #{remark})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.adjust_salary(e_id, as_date, before_salary, after_salary, reason, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.asDate}, #{entity.beforeSalary}, #{entity.afterSalary}, #{entity.reason},
+            #{entity.remark})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.adjust_salary(e_id, as_date, before_salary, after_salary, reason, remark)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.eId}, #{entity.asDate}, #{entity.beforeSalary}, #{entity.afterSalary}, #{entity.reason},
+            #{entity.remark})
+        </foreach>
+        on duplicate key update
+        e_id = values(e_id) , as_date = values(as_date) , before_salary = values(before_salary) , after_salary =
+        values(after_salary) , reason = values(reason) , remark = values(remark)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.adjust_salary
+        <set>
+            <if test="eId != null">
+                e_id = #{eId},
+            </if>
+            <if test="asDate != null">
+                as_date = #{asDate},
+            </if>
+            <if test="beforeSalary != null">
+                before_salary = #{beforeSalary},
+            </if>
+            <if test="afterSalary != null">
+                after_salary = #{afterSalary},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.adjust_salary
+        where id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.MenuDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.Menu" id="MenuMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="name" column="component" jdbcType="VARCHAR"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="component" column="component" jdbcType="VARCHAR"/>
+        <result property="iconCls" column="icon_cls" jdbcType="VARCHAR"/>
+        <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+        <result property="enabled" column="enabled" jdbcType="BOOLEAN"/>
+        <association property="meta" javaType="com.lucian.vhr_server.entity.Meta">
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="keepAlive" column="keep_alive" jdbcType="BOOLEAN"/>
+            <result property="requireAuth" column="require_auth" jdbcType="BOOLEAN"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="menu2" type="com.lucian.vhr_server.entity.Menu" extends="MenuMap">
+        <collection property="children" ofType="com.lucian.vhr_server.entity.Menu">
+            <result property="id" column="id2" jdbcType="INTEGER"/>
+            <result property="url" column="url2" jdbcType="VARCHAR"/>
+            <result property="name" column="component2" jdbcType="VARCHAR"/>
+            <result property="path" column="path2" jdbcType="VARCHAR"/>
+            <result property="component" column="component2" jdbcType="VARCHAR"/>
+            <result property="iconCls" column="icon_cls2" jdbcType="VARCHAR"/>
+            <result property="parentId" column="parent_id2" jdbcType="INTEGER"/>
+            <result property="enabled" column="enabled2" jdbcType="BOOLEAN"/>
+            <association property="meta" javaType="com.lucian.vhr_server.entity.Meta">
+                <result property="name" column="name2" jdbcType="VARCHAR"/>
+                <result property="keepAlive" column="keep_alive2" jdbcType="BOOLEAN"/>
+                <result property="requireAuth" column="require_auth2" jdbcType="BOOLEAN"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <resultMap id="MenuWithRole" type="com.lucian.vhr_server.entity.Menu" extends="MenuMap">
+        <collection property="roles" ofType="com.lucian.vhr_server.entity.Role">
+            <id property="id" column="r_id" jdbcType="INTEGER"/>
+            <result property="name" column="r_name" jdbcType="VARCHAR"/>
+            <result property="nameZh" column="r_name_zh" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="MenuWithChildren" type="com.lucian.vhr_server.entity.Menu" extends="MenuMap">
+        <id property="id" column="id_1"/>
+        <result property="name" column="name_1"/>
+        <collection property="children" ofType="com.lucian.vhr_server.entity.Menu">
+            <id property="id" column="id_2"/>
+            <result property="name" column="name_2"/>
+            <collection property="children" ofType="com.lucian.vhr_server.entity.Menu">
+                <id property="id" column="id_3"/>
+                <result property="name" column="name_3"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MenuMap">
+        select id,
+               url,
+               path,
+               component,
+               name,
+               icon_cls,
+               keep_alive,
+               require_auth,
+               parent_id,
+               enabled
+        from vhr.menu
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MenuMap">
+        select id,
+               url,
+               path,
+               component,
+               name,
+               icon_cls,
+               keep_alive,
+               require_auth,
+               parent_id,
+               enabled
+        from vhr.menu
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MenuMap">
+        select
+        id, url, path, component, name, icon_cls, keep_alive, require_auth, parent_id, enabled
+        from vhr.menu
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="url != null and url != ''">
+                and url = #{url}
+            </if>
+            <if test="path != null and path != ''">
+                and path = #{path}
+            </if>
+            <if test="component != null and component != ''">
+                and component = #{component}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="iconCls != null and iconCls != ''">
+                and icon_cls = #{iconCls}
+            </if>
+            <if test="keepAlive != null">
+                and keep_alive = #{keepAlive}
+            </if>
+            <if test="requireAuth != null">
+                and require_auth = #{requireAuth}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="enabled != null">
+                and enabled = #{enabled}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.menu(url, path, component, name, enabled)
+        values (#{url}, #{path}, #{component}, #{name}, #{enabled})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.menu(url, path, component, name, enabled)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.url}, #{entity.path}, #{entity.component}, #{entity.name}, #{entity.enabled})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.menu(url, path, component, name, enabled)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.url}, #{entity.path}, #{entity.component}, #{entity.name}, #{entity.enabled})
+        </foreach>
+        on duplicate key update
+        url = values(url) , path = values(path) , component = values(component) , name = values(name) , enabled =
+        values(enabled)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.menu
+        <set>
+            <if test="url != null and url != ''">
+                url = #{url},
+            </if>
+            <if test="path != null and path != ''">
+                path = #{path},
+            </if>
+            <if test="component != null and component != ''">
+                component = #{component},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.menu
+        where id = #{id}
+    </delete>
+
+    <select id="getMenusByHrId" resultMap="menu2">
+        select distinct m1.*, m2.id as id2, m2.url as url2, m2.path as path2,
+                        m2.component as component2, m2.name as name2, m2.icon_cls as icon_cls2,
+                        m2.keep_alive as keep_alive2, m2.require_auth as require_auth2,
+                        m2.parent_id as parent_id2, m2.enabled as enabled2
+        from vhr.hr inner join hr_role h on hr.id = h.hr_id inner join role r on h.r_id = r.id
+        inner join menu_role mr on r.id = mr.rid inner join menu m2 on mr.mid = m2.id
+            inner join menu m1 on m1.id = m2.parent_id
+        where m2.enabled = true and hr.id = #{id} order by m1.id asc, m2.id asc
+    </select>
+
+    <select id="getAllMenuWithRole" resultMap="MenuWithRole">
+        select m.*, r.id as r_id, r.name as r_name, r.name_zh as r_name_zh from menu m left join menu_role mr on m.id = mr.mid
+        left join role r on r.id = mr.rid
+        where url != '/' order by m.id asc
+    </select>
+
+    <select id="getAllMenu" resultMap="MenuWithChildren">
+        select m1.id as id_1, m1.name as name_1, m2.id as id_2, m2.name as name_2, m3.id as id_3, m3.name as name_3
+        from menu m1 left join menu m2 on m1.id = m2.parent_id
+            left join menu m3 on m2.id = m3.parent_id where m1.parent_id is null;
+    </select>
+
+    <select id="getMidsByRid" resultType="java.lang.Integer">
+        select mid from vhr.menu_role where rid = #{rId};
+    </select>
+</mapper>

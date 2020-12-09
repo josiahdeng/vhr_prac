@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lucian.vhr_server.dao.SalaryDao">
+
+    <resultMap type="com.lucian.vhr_server.entity.Salary" id="SalaryMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="basicSalary" column="basic_salary" jdbcType="INTEGER"/>
+        <result property="bonus" column="bonus" jdbcType="INTEGER"/>
+        <result property="lunchSalary" column="lunch_salary" jdbcType="INTEGER"/>
+        <result property="trafficSalary" column="traffic_salary" jdbcType="INTEGER"/>
+        <result property="allSalary" column="all_salary" jdbcType="INTEGER"/>
+        <result property="pensionBase" column="pension_base" jdbcType="INTEGER"/>
+        <result property="pensionPer" column="pension_per" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="medicalBase" column="medical_base" jdbcType="INTEGER"/>
+        <result property="medicalPer" column="medical_per" jdbcType="VARCHAR"/>
+        <result property="accumulationFundBase" column="accumulation_fund_base" jdbcType="INTEGER"/>
+        <result property="accumulationFundPer" column="accumulation_fund_per" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="SalaryMap">
+        select id,
+               basic_salary,
+               bonus,
+               lunch_salary,
+               traffic_salary,
+               all_salary,
+               pension_base,
+               pension_per,
+               create_date,
+               medical_base,
+               medical_per,
+               accumulation_fund_base,
+               accumulation_fund_per,
+               name
+        from vhr.salary
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SalaryMap">
+        select id,
+               basic_salary,
+               bonus,
+               lunch_salary,
+               traffic_salary,
+               all_salary,
+               pension_base,
+               pension_per,
+               create_date,
+               medical_base,
+               medical_per,
+               accumulation_fund_base,
+               accumulation_fund_per,
+               name
+        from vhr.salary
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SalaryMap">
+        select
+        id, basic_salary, bonus, lunch_salary, traffic_salary, all_salary, pension_base, pension_per, create_date,
+        medical_base, medical_per, accumulation_fund_base, accumulation_fund_per, name
+        from vhr.salary
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="basicSalary != null">
+                and basic_salary = #{basicSalary}
+            </if>
+            <if test="bonus != null">
+                and bonus = #{bonus}
+            </if>
+            <if test="lunchSalary != null">
+                and lunch_salary = #{lunchSalary}
+            </if>
+            <if test="trafficSalary != null">
+                and traffic_salary = #{trafficSalary}
+            </if>
+            <if test="allSalary != null">
+                and all_salary = #{allSalary}
+            </if>
+            <if test="pensionBase != null">
+                and pension_base = #{pensionBase}
+            </if>
+            <if test="pensionPer != null">
+                and pension_per = #{pensionPer}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="medicalBase != null">
+                and medical_base = #{medicalBase}
+            </if>
+            <if test="medicalPer != null">
+                and medical_per = #{medicalPer}
+            </if>
+            <if test="accumulationFundBase != null">
+                and accumulation_fund_base = #{accumulationFundBase}
+            </if>
+            <if test="accumulationFundPer != null">
+                and accumulation_fund_per = #{accumulationFundPer}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.salary(bonus, name)
+        values (#{bonus}, #{name})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.salary(bonus, name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bonus}, #{entity.name})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into vhr.salary(bonus, name)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.bonus}, #{entity.name})
+        </foreach>
+        on duplicate key update
+        bonus = values(bonus) , name = values(name)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vhr.salary
+        <set>
+            <if test="bonus != null">
+                bonus = #{bonus},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from vhr.salary
+        where id = #{id}
+    </delete>
+
+</mapper>
