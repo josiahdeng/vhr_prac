@@ -1,6 +1,6 @@
 <template>
   <div>
-      <el-tabs v-model="activeName" type="card">
+      <el-tabs v-model="activeName" type="card" @tab-click="handleEvent">
         <el-tab-pane label="部门管理" name="first"><DepManager></DepManager></el-tab-pane>
         <el-tab-pane label="职位管理" name="second"><PosManager></PosManager></el-tab-pane>
         <el-tab-pane label="职称管理" name="third"><JobLevelManager></JobLevelManager></el-tab-pane>
@@ -26,6 +26,9 @@ export default {
     };
   },
   methods: {
+    handleEvent(tab, event){
+      console.log(tab, event);
+    }
   },
   comments: {
     DepManager,

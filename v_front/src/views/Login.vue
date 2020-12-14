@@ -37,7 +37,7 @@ export default {
     submitLogin(){
       this.$refs['loginForm'].validate((valid) => {
         if(valid) {
-          this.postKeyValue("doLogin", this.loginForm).then(resp => {
+          this.postRequest("doLogin", this.loginForm).then(resp => {
             if (resp){
               window.sessionStorage.setItem('user', JSON.stringify(resp.obj));
               let redirectPath = this.$route.query.redirect;

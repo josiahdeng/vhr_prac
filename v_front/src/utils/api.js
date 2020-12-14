@@ -20,7 +20,8 @@ instance.interceptors.response.use(response => {
     } else if (error.response.status === 403) {
         Message.error({message: "权限不足！请联系管理员。"});
     } else if (error.response.status === 401) {
-        Message.error({message: "请登录！"});
+        let message = error.response.data.msg || "请登录！"
+        Message.error({message: message});
         router.replace("/")
     } else if (error.response === 404){
         Message.error({message: "页面被吃了！"})
