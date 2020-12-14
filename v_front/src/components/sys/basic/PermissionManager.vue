@@ -53,11 +53,8 @@ export default {
       activeName: -1
     }
   },
-  mounted() {
-    this.initPositions();
-  },
   methods: {
-    initPositions() {
+    init() {
       this.getRequest('/system/basic/permission/').then(resp => {
         if (resp && resp.status === 200) this.roles = resp.obj;
       });
@@ -101,7 +98,7 @@ export default {
       }
       this.postRequest("/system/basic/permission/role", this.role).then(resp => {
         if(resp && resp.status === 200){
-          this.initPositions();
+          this.init();
           this.role.name = '';
           this.role.nameZh = "";
         }
@@ -114,7 +111,7 @@ export default {
         type: 'waring'
       }).then(() => {
         this.delRequest(`/system/basic/permission/role/${role.id}`).then(resp => {
-          if (resp && resp.status === 200) this.initPositions();
+          if (resp && resp.status === 200) this.init();
         })
       }).catch(() => {
         this.$message.info("已取消该操作！");

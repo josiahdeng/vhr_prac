@@ -98,11 +98,8 @@ export default {
       selPositions: []
     }
   },
-  mounted() {
-    this.initPositions();
-  },
   methods: {
-    initPositions() {
+    init() {
       this.getRequest('/system/basic/pos/').then(resp => {
         if (resp && resp.status === 200) this.positions = resp.obj;
       });
@@ -114,7 +111,7 @@ export default {
       }
       this.postRequest('/system/basic/pos/', this.position).then(data => {
         this.position.name = ''
-        this.initPositions();
+        this.init();
       });
     },
     handleEdit(index, data) {
@@ -129,7 +126,7 @@ export default {
       })
           .then(() => {
             this.delRequest(`/system/basic/pos/${data.id}`).then(resp => {
-              if (resp && resp.status === 200) this.initPositions();
+              if (resp && resp.status === 200) this.init();
             })
           })
           .catch(() => {
@@ -138,7 +135,7 @@ export default {
     },
     doUpdate() {
       this.putRequest(`/system/basic/pos/`, this.temp).then(resp => {
-        this.initPositions();
+        this.init();
         this.dialogVisible = false;
       })
     },
@@ -155,7 +152,7 @@ export default {
             let delPosIds = [];
             this.selPositions.forEach(position => {delPosIds.push(position.id)});
             this.delRequest(`/system/basic/pos/?ids=${delPosIds.join('&ids=')}`).then(resp => {
-              if (resp && resp.status === 200) this.initPositions();
+              if (resp && resp.status === 200) this.init();
             });
           })
           .catch(() => {

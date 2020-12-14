@@ -95,14 +95,14 @@ export default {
     }
   },
   mounted() {
-    this.initDept();
+    this.init();
   },
   methods: {
     filterNode(value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
-    initDept(){
+    init(){
       this.getRequest('/system/basic/dept/').then(resp => {
         if(resp && resp.status) this.depts = resp.obj;
       })

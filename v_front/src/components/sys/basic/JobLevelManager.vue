@@ -124,11 +124,8 @@ export default {
       selJobLevels: []
     };
   },
-  mounted() {
-    this.initJobLevel();
-  },
   methods: {
-    initJobLevel() {
+    init() {
       this.getRequest('/system/basic/job_level/').then(resp => {
         if (resp && resp.status === 200) this.jobLevels = resp.obj;
       })
@@ -137,7 +134,7 @@ export default {
       if (this.jobLevel.name && this.jobLevel.titleLevel) {
         this.postRequest('/system/basic/job_level/', this.jobLevel).then(resp => {
           if (resp && resp.status == 200) {
-            this.initJobLevel();
+            this.init();
             this.jobLevel.name = '';
             this.jobLevel.titleLevel = '';
           }
@@ -154,7 +151,7 @@ export default {
       })
           .then(() => {
             this.delRequest(`/system/basic/job_level/${data.id}`).then(resp => {
-              if (resp && resp.status === 200) this.initJobLevel();
+              if (resp && resp.status === 200) this.init();
             })
           })
           .catch(() => {
@@ -169,7 +166,7 @@ export default {
     updateJobLevel(){
       this.putRequest('/system/basic/job_level/', this.temp).then(resp => {
         if (resp && resp.status === 200) {
-          this.initJobLevel();
+          this.init();
           this.temp = {};
           this.dialogVisible = false;
         }
@@ -188,7 +185,7 @@ export default {
         this.selJobLevels.forEach(job => delJobLevelIds.push(job.id));
         this.delRequest(`/system/basic/job_level/?&ids=${delJobLevelIds.join('&ids=')}`).then(resp => {
           if (resp && resp.status === 200){
-            this.initJobLevel();
+            this.init();
           }
         })
       }).catch(() => {
