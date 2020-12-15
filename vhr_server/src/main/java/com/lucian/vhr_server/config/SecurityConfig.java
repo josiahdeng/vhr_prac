@@ -22,6 +22,7 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.*;
 import org.springframework.security.web.session.ConcurrentSessionFilter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -152,6 +153,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 error.setMsg("账户被禁用，请联系管理员");
             } else if (exception instanceof BadCredentialsException){
                 error.setMsg("用户名或密码错误,请重试");
+            } else if (exception instanceof SessionAuthenticationException){
+                error.setMsg("此账号，在另外的设备中已登陆！请稍后再试。");
             }
             out.write(new ObjectMapper().writeValueAsString(error));
             out.flush();
@@ -159,7 +162,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         });
 
 //        ConcurrentSessionControlAuthenticationStrategy strategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
-
         loginFilter.setSessionAuthenticationStrategy(compositeSessionAuthenticationStrategy());
         return loginFilter;
     }
@@ -177,7 +179,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ConcurrentSessionControlAuthenticationStrategy controlAuthenticationStrategy = new ConcurrentSessionControlAuthenticationStrategy(sessionRegistry());
         //最多一个用户最多只能存在一个session
         controlAuthenticationStrategy.setMaximumSessions(1);
-        //不保留标记为过期的session
+        //允许被挤下线
         controlAuthenticationStrategy.setExceptionIfMaximumExceeded(false);
         delegateStrategies.add(controlAuthenticationStrategy);
         SessionFixationProtectionStrategy fixationProtectionStrategy = new SessionFixationProtectionStrategy();
@@ -186,5 +188,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         RegisterSessionAuthenticationStrategy registerSessionAuthenticationStrategy = new RegisterSessionAuthenticationStrategy(sessionRegistry());
         delegateStrategies.add(registerSessionAuthenticationStrategy);
         return new CompositeSessionAuthenticationStrategy(delegateStrategies);
+    }
+
+    @Bean
+    HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }
