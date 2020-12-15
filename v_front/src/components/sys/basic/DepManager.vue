@@ -91,7 +91,8 @@ export default {
         name: '',
         parentId: ''
       },
-      pName: ''
+      pName: '',
+      loading: false
     }
   },
   mounted() {
@@ -103,9 +104,14 @@ export default {
       return data.name.indexOf(value) !== -1;
     },
     init(){
+      this.loading = true;
       this.getRequest('/system/basic/dept/').then(resp => {
         if(resp && resp.status) this.depts = resp.obj;
-      })
+      }).catch(error => {
+        console.log(error.response);
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     showDept(data){
       this.pName = data.name;

@@ -16,6 +16,7 @@
     <div class="posManMain">
       <el-table
           :data="positions"
+          v-loading="loading"
           border
           stripe
           size="small"
@@ -95,13 +96,19 @@ export default {
       temp: {},
       positions: [],
       dialogVisible: false,
-      selPositions: []
+      selPositions: [],
+      loading: false
     }
   },
   methods: {
     init() {
+      this.loading = true;
       this.getRequest('/system/basic/pos/').then(resp => {
         if (resp && resp.status === 200) this.positions = resp.obj;
+      }).catch(error => {
+        console.log(error.response);
+      }).finally(() => {
+        this.loading = false;
       });
     },
     addPosition() {

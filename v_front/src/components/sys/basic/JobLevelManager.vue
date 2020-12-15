@@ -16,6 +16,7 @@
     <div class="jobLevelMain">
       <el-table
           :data="jobLevels"
+          v-loading="loading"
           stripe
           border
           size="small"
@@ -121,19 +122,25 @@ export default {
       ],
       dialogVisible: false,
       temp: {},
-      selJobLevels: []
+      selJobLevels: [],
+      loading: false
     };
   },
   methods: {
     init() {
+      this.loading = true;
       this.getRequest('/system/basic/job_level/').then(resp => {
         if (resp && resp.status === 200) this.jobLevels = resp.obj;
+      }).catch(error => {
+        console.log(error.response);
+      }).finally(() => {
+        this.loading = false;
       })
     },
     addJobLevel() {
       if (this.jobLevel.name && this.jobLevel.titleLevel) {
         this.postRequest('/system/basic/job_level/', this.jobLevel).then(resp => {
-          if (resp && resp.status == 200) {
+          if (resp && resp.status === 200) {
             this.init();
             this.jobLevel.name = '';
             this.jobLevel.titleLevel = '';

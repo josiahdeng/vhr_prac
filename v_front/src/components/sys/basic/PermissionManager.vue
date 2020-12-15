@@ -13,7 +13,7 @@
       </el-button>
     </div>
     <div class="dataContent">
-      <el-collapse v-model="activeName" accordion @change="change">
+      <el-collapse v-model="activeName" accordion @change="change" v-loading="loading">
         <el-collapse-item :title="role.nameZh" :name="role.id" v-for="(role, index) in roles" :key="index">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
@@ -50,13 +50,19 @@ export default {
         label: 'name'
       },
       selectedMenus: [],
-      activeName: -1
+      activeName: -1,
+      loading: false
     }
   },
   methods: {
     init() {
+      this.loading = true;
       this.getRequest('/system/basic/permission/').then(resp => {
         if (resp && resp.status === 200) this.roles = resp.obj;
+      }).catch(error => {
+        console.log(error.response);
+      }).finally(() => {
+        this.loading = false;
       });
     },
     initAllMenus(){
